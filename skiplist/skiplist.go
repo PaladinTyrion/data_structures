@@ -39,10 +39,15 @@ func (sl *SkipList) search(val Comparator, cache nodes) (resNode *node) {
 		return nil
 	}
 
+	if val == nil {
+		return nil
+	}
+
 	n := sl.head
 	var alreadyChecked *node
 	for i := int(sl.level)-1; i >= 0 ; i-- {
-		for ;n.forward[i] != nil && n.forward[i] != alreadyChecked && n.forward[i].Compare(val) < 0; {
+		for ;n.forward[i] != nil && n.forward[i] != alreadyChecked &&
+			n.forward[i].entry != nil && n.forward[i].Compare(val) < 0; {
 			n = n.forward[i]
 		}
 
@@ -71,6 +76,10 @@ func (sl *SkipList) insert(n *node, val Comparator, cache nodes, allowOverwrite 
 		return val
 	}
 
+	if val == nil {
+		return nil
+	}
+
 	nLevel := generatorLevel(sl.maxLevel)
 	if nLevel > sl.level {
 		for i := sl.level; i < nLevel; i++ {
@@ -80,7 +89,7 @@ func (sl *SkipList) insert(n *node, val Comparator, cache nodes, allowOverwrite 
 	}
 
 	nn := newNode(val, sl.maxLevel)
-	for i := uint8(0); i < nLevel; i++ {
+	for i := 0; i < int(nLevel); i++ {
 		nn.forward[i] = cache[i].forward[i]
 		cache[i].forward[i] = nn
 	}
@@ -104,7 +113,7 @@ func (sl *SkipList) delete(n *node, val Comparator, cache nodes) (del Comparator
 	}
 
 	sl.length--
-	for i := uint8(0); i < sl.level; i++ {
+	for i := 0; i < int(sl.level); i++ {
 		cache[i].forward[i] = n.forward[i]
 	}
 

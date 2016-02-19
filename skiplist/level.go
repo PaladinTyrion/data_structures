@@ -20,7 +20,7 @@ func generatorLevel(maxlevel uint8) (level uint8) {
 	glLock.Lock()
 	defer glLock.Unlock()
 
-	for level = uint8(1); level <= maxlevel; level++ {
+	for level = uint8(1); level < maxlevel; level++ {
 		if generator.Float64() >= p {
 			return level
 		}
